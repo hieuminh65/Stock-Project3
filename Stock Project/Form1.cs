@@ -19,18 +19,31 @@ namespace Stock_Project
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Text = "Hello World! I was clicked";
-            file = openFileDialog1.ShowDialog();
-            if (file == DialogResult.OK)
-            {
-                textBox1.Text = openFileDialog1.FileName;
-            }file = openFileDialog1.ShowDialog();
-
+            //submit button
+            
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            TextBox tb = (TextBox)sender;
+            string text = "Hello";
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
+        {
+            // handle choosing date
+            DateTime dt = DateTime.Now;
+            string date = dt.ToString("MM/dd/yyyy");
         }
     }
 }
