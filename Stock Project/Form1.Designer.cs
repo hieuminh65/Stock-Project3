@@ -28,15 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.openFileDialog_SymbolChooser = new System.Windows.Forms.OpenFileDialog();
             this.dateTimePicker_Start = new System.Windows.Forms.DateTimePicker();
             this.directorySearcher1 = new System.DirectoryServices.DirectorySearcher();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.dateTimePicker_End = new System.Windows.Forms.DateTimePicker();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
@@ -69,19 +68,9 @@
             this.directorySearcher1.ServerPageTimeLimit = System.TimeSpan.Parse("-00:00:01");
             this.directorySearcher1.ServerTimeLimit = System.TimeSpan.Parse("-00:00:01");
             // 
-            // comboBox1
-            // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(229, 52);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(656, 33);
-            this.comboBox1.TabIndex = 2;
-            this.comboBox1.Text = " IBM, APPL, GOOG, ...";
-            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
-            // 
             // dateTimePicker_End
             // 
-            this.dateTimePicker_End.Location = new System.Drawing.Point(55, 264);
+            this.dateTimePicker_End.Location = new System.Drawing.Point(480, 131);
             this.dateTimePicker_End.Name = "dateTimePicker_End";
             this.dateTimePicker_End.Size = new System.Drawing.Size(384, 31);
             this.dateTimePicker_End.TabIndex = 3;
@@ -101,7 +90,7 @@
             // textBox2
             // 
             this.textBox2.AccessibleDescription = "";
-            this.textBox2.Location = new System.Drawing.Point(55, 215);
+            this.textBox2.Location = new System.Drawing.Point(480, 82);
             this.textBox2.Name = "textBox2";
             this.textBox2.ReadOnly = true;
             this.textBox2.Size = new System.Drawing.Size(100, 31);
@@ -112,10 +101,10 @@
             // 
             this.textBox3.AccessibleDescription = "";
             this.textBox3.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox3.Location = new System.Drawing.Point(229, 22);
+            this.textBox3.Location = new System.Drawing.Point(55, 12);
             this.textBox3.Name = "textBox3";
             this.textBox3.ReadOnly = true;
-            this.textBox3.Size = new System.Drawing.Size(171, 24);
+            this.textBox3.Size = new System.Drawing.Size(295, 24);
             this.textBox3.TabIndex = 7;
             this.textBox3.Text = "Search a symbol";
             this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
@@ -123,7 +112,7 @@
             // pickStockButton
             // 
             this.pickStockButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.pickStockButton.Location = new System.Drawing.Point(911, 36);
+            this.pickStockButton.Location = new System.Drawing.Point(55, 213);
             this.pickStockButton.Name = "pickStockButton";
             this.pickStockButton.Size = new System.Drawing.Size(188, 77);
             this.pickStockButton.TabIndex = 8;
@@ -134,45 +123,45 @@
             // dataGridView1
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(478, 128);
+            this.dataGridView1.Location = new System.Drawing.Point(385, 213);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 82;
             this.dataGridView1.RowTemplate.Height = 33;
-            this.dataGridView1.Size = new System.Drawing.Size(854, 187);
+            this.dataGridView1.Size = new System.Drawing.Size(1439, 310);
             this.dataGridView1.TabIndex = 9;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
             // chart1
             // 
-            chartArea3.Name = "ChartArea_OHLC";
-            chartArea4.AlignWithChartArea = "ChartArea_OHLC";
-            chartArea4.Name = "ChartArea_Volume";
-            this.chart1.ChartAreas.Add(chartArea3);
-            this.chart1.ChartAreas.Add(chartArea4);
-            legend2.Name = "Legend1";
-            this.chart1.Legends.Add(legend2);
-            this.chart1.Location = new System.Drawing.Point(55, 341);
+            chartArea1.Name = "ChartArea_OHLC";
+            chartArea2.AlignWithChartArea = "ChartArea_OHLC";
+            chartArea2.Name = "ChartArea_Volume";
+            this.chart1.ChartAreas.Add(chartArea1);
+            this.chart1.ChartAreas.Add(chartArea2);
+            legend1.Name = "Legend1";
+            this.chart1.Legends.Add(legend1);
+            this.chart1.Location = new System.Drawing.Point(55, 562);
             this.chart1.Name = "chart1";
-            series3.ChartArea = "ChartArea_OHLC";
-            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
-            series3.CustomProperties = "PriceDownColor=Red, PriceUpColor=Chartreuse";
-            series3.Legend = "Legend1";
-            series3.Name = "Series_OHLC";
-            series3.XValueMember = "Date";
-            series3.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.DateTime;
-            series3.YValueMembers = "High,Low,Open,Close";
-            series3.YValuesPerPoint = 4;
-            series3.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.UInt64;
-            series4.ChartArea = "ChartArea_Volume";
-            series4.Legend = "Legend1";
-            series4.Name = "Series_Volume";
-            series4.XValueMember = "Date";
-            series4.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.DateTime;
-            series4.YValueMembers = "Volume";
-            series4.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.UInt64;
-            this.chart1.Series.Add(series3);
-            this.chart1.Series.Add(series4);
-            this.chart1.Size = new System.Drawing.Size(1175, 409);
+            series1.ChartArea = "ChartArea_OHLC";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
+            series1.CustomProperties = "PriceDownColor=Red, PriceUpColor=Chartreuse";
+            series1.Legend = "Legend1";
+            series1.Name = "Series_OHLC";
+            series1.XValueMember = "Date";
+            series1.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.DateTime;
+            series1.YValueMembers = "High,Low,Open,Close";
+            series1.YValuesPerPoint = 4;
+            series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.UInt64;
+            series2.ChartArea = "ChartArea_Volume";
+            series2.Legend = "Legend1";
+            series2.Name = "Series_Volume";
+            series2.XValueMember = "Date";
+            series2.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.DateTime;
+            series2.YValueMembers = "Volume";
+            series2.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.UInt64;
+            this.chart1.Series.Add(series1);
+            this.chart1.Series.Add(series2);
+            this.chart1.Size = new System.Drawing.Size(1769, 409);
             this.chart1.TabIndex = 11;
             this.chart1.Text = "chart1";
             this.chart1.Click += new System.EventHandler(this.chart1_Click);
@@ -181,7 +170,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1893, 781);
+            this.ClientSize = new System.Drawing.Size(1893, 983);
             this.Controls.Add(this.chart1);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.pickStockButton);
@@ -189,7 +178,6 @@
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.dateTimePicker_End);
-            this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.dateTimePicker_Start);
             this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.Name = "MainForm";
@@ -205,7 +193,6 @@
         #endregion
         private System.Windows.Forms.DateTimePicker dateTimePicker_Start;
         private System.DirectoryServices.DirectorySearcher directorySearcher1;
-        private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.DateTimePicker dateTimePicker_End;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.TextBox textBox2;

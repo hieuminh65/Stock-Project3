@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 // Namespace declaration for the stock project
 namespace Stock_Project
 {
-    // Definition of the Candlestick class
+    /// <summary>
+    /// Definition of the Candlestick class
+    /// </summary>
     internal class Candlestick
     {
         // Public properties to hold the date, open, close, high, low values, and volume for a candlestick
@@ -18,7 +20,10 @@ namespace Stock_Project
         public decimal low { get; set; }
         public long volume { get; set; }
 
-        // Constructor that takes a string representing a row of stock data
+        /// <summary>
+        /// Constructor that takes a string representing a row of stock data
+        /// </summary>
+        /// <param name="rowOfData">a row of data in the data file</param>
         public Candlestick(string rowOfData)
         {
             // Define separators for splitting the input string

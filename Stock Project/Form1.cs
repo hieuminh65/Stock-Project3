@@ -13,7 +13,9 @@ using System.Windows.Forms;
 // Namespace declaration
 namespace empty
 {
-    // Definition of the MainForm class, inheriting from Form
+    /// <summary>
+    /// Definition of the MainForm class, inheriting from Form
+    /// </summary>
     public partial class MainForm : Form
     {
         // Declaration of a list to hold Candlestick objects
@@ -36,7 +38,11 @@ namespace empty
             dateTimePicker_Start.Value = DateTime.Now.AddYears(-1);
         }
 
-        // Event handler for the 'Pick Stock' button click event
+        /// <summary>
+        /// Event handler for the 'Pick Stock' button click event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button_PickStock_Click(object sender, EventArgs e)
         {
             // Shows the open file dialog to the user
@@ -49,7 +55,11 @@ namespace empty
             }
         }
 
-        // Event handler for the file dialog 'FileOk' event
+        /// <summary>
+        /// Event handler for the file dialog 'FileOk' event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
             // Gets the selected file name from the file dialog
@@ -66,16 +76,19 @@ namespace empty
             // Refreshes the Chart control to display the new data
             chart1.DataBind();
         }
-
-        // Method to read stock data from a file and load it into the list
+        /// <summary>
+        /// Method to read stock data from a file and load it into the list
+        /// </summary>
+        /// <param name="filename">"The file that need to be read"</param>
+        /// <returns>a List of CandleSticks</returns>
         private List<Candlestick> goReadFile(string filename)
         {
             // Defines the expected format of the first line in the file
             const string referenceString = "Date,Open,High,Low,Close,Adj Close,Volume";
             // Gets the start date from the DateTimePicker
-            DateTime startDate = dateTimePicker_Start.Value.Date;
+            DateTime startDate = dateTimePicker_Start.Value;
             // Gets the end date from the DateTimePicker
-            DateTime endDate = dateTimePicker_End.Value.Date;
+            DateTime endDate = dateTimePicker_End.Value;
 
             // Opens the file for reading
             using (StreamReader sr = new StreamReader(filename))
@@ -128,11 +141,6 @@ namespace empty
 
         // Placeholder method for start date DateTimePicker value changed event
         private void dateTimePicker_Start_ValueChanged(object sender, EventArgs e)
-        {
-        }
-
-        // Placeholder method for combo box 1 selected index changed event
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
         }
 
