@@ -28,45 +28,40 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button = new System.Windows.Forms.Button();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.openFileDialog_SymbolChooser = new System.Windows.Forms.OpenFileDialog();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.dateTimePicker_Start = new System.Windows.Forms.DateTimePicker();
             this.directorySearcher1 = new System.DirectoryServices.DirectorySearcher();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
-            this.button1 = new System.Windows.Forms.Button();
+            this.dateTimePicker_End = new System.Windows.Forms.DateTimePicker();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.pickStockButton = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // button
-            // 
-            this.button.Location = new System.Drawing.Point(464, 178);
-            this.button.Name = "button";
-            this.button.Size = new System.Drawing.Size(147, 47);
-            this.button.TabIndex = 0;
-            this.button.Text = "Submit";
-            this.button.UseVisualStyleBackColor = true;
-            this.button.Click += new System.EventHandler(this.button1_Click);
             // 
             // openFileDialog_SymbolChooser
             // 
             this.openFileDialog_SymbolChooser.FileName = "openFileDialog_SymbolChooser";
-            this.openFileDialog_SymbolChooser.Filter = "All Files|*.csv|Monthly|*-Month.csv|Daily|*Daily.csv";
+            this.openFileDialog_SymbolChooser.Filter = "All Files|*.csv|Monthly|*-Month.csv|Daily|*Daily.csv|Weekly|*Weekly.csv";
             this.openFileDialog_SymbolChooser.Title = "Choose Files";
             this.openFileDialog_SymbolChooser.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
             // 
-            // dateTimePicker1
+            // dateTimePicker_Start
             // 
-            this.dateTimePicker1.Location = new System.Drawing.Point(16, 178);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(384, 31);
-            this.dateTimePicker1.TabIndex = 1;
-            this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
+            this.dateTimePicker_Start.Location = new System.Drawing.Point(55, 132);
+            this.dateTimePicker_Start.Name = "dateTimePicker_Start";
+            this.dateTimePicker_Start.Size = new System.Drawing.Size(384, 31);
+            this.dateTimePicker_Start.TabIndex = 1;
+            this.dateTimePicker_Start.ValueChanged += new System.EventHandler(this.dateTimePicker_Start_ValueChanged);
             // 
             // directorySearcher1
             // 
@@ -84,26 +79,18 @@
             this.comboBox1.Text = " IBM, APPL, GOOG, ...";
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
-            // dateTimePicker2
+            // dateTimePicker_End
             // 
-            this.dateTimePicker2.Location = new System.Drawing.Point(16, 310);
-            this.dateTimePicker2.Name = "dateTimePicker2";
-            this.dateTimePicker2.Size = new System.Drawing.Size(384, 31);
-            this.dateTimePicker2.TabIndex = 3;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(464, 310);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(147, 47);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "Submit";
-            this.button1.UseVisualStyleBackColor = true;
+            this.dateTimePicker_End.Location = new System.Drawing.Point(55, 264);
+            this.dateTimePicker_End.Name = "dateTimePicker_End";
+            this.dateTimePicker_End.Size = new System.Drawing.Size(384, 31);
+            this.dateTimePicker_End.TabIndex = 3;
+            this.dateTimePicker_End.ValueChanged += new System.EventHandler(this.dateTimePicker_End_ValueChanged);
             // 
             // textBox1
             // 
             this.textBox1.AccessibleDescription = "";
-            this.textBox1.Location = new System.Drawing.Point(16, 130);
+            this.textBox1.Location = new System.Drawing.Point(55, 84);
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
             this.textBox1.Size = new System.Drawing.Size(100, 31);
@@ -114,7 +101,7 @@
             // textBox2
             // 
             this.textBox2.AccessibleDescription = "";
-            this.textBox2.Location = new System.Drawing.Point(16, 261);
+            this.textBox2.Location = new System.Drawing.Point(55, 215);
             this.textBox2.Name = "textBox2";
             this.textBox2.ReadOnly = true;
             this.textBox2.Size = new System.Drawing.Size(100, 31);
@@ -136,64 +123,97 @@
             // pickStockButton
             // 
             this.pickStockButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.pickStockButton.Location = new System.Drawing.Point(915, 52);
+            this.pickStockButton.Location = new System.Drawing.Point(911, 36);
             this.pickStockButton.Name = "pickStockButton";
             this.pickStockButton.Size = new System.Drawing.Size(188, 77);
             this.pickStockButton.TabIndex = 8;
             this.pickStockButton.Text = "Pick a Stock";
             this.pickStockButton.UseVisualStyleBackColor = true;
-            this.pickStockButton.Click += new System.EventHandler(this.button2_Click);
+            this.pickStockButton.Click += new System.EventHandler(this.button_PickStock_Click);
             // 
             // dataGridView1
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(628, 154);
+            this.dataGridView1.Location = new System.Drawing.Point(478, 128);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 82;
             this.dataGridView1.RowTemplate.Height = 33;
-            this.dataGridView1.Size = new System.Drawing.Size(854, 481);
+            this.dataGridView1.Size = new System.Drawing.Size(854, 187);
             this.dataGridView1.TabIndex = 9;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
+            // 
+            // chart1
+            // 
+            chartArea3.Name = "ChartArea_OHLC";
+            chartArea4.AlignWithChartArea = "ChartArea_OHLC";
+            chartArea4.Name = "ChartArea_Volume";
+            this.chart1.ChartAreas.Add(chartArea3);
+            this.chart1.ChartAreas.Add(chartArea4);
+            legend2.Name = "Legend1";
+            this.chart1.Legends.Add(legend2);
+            this.chart1.Location = new System.Drawing.Point(55, 341);
+            this.chart1.Name = "chart1";
+            series3.ChartArea = "ChartArea_OHLC";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
+            series3.CustomProperties = "PriceDownColor=Red, PriceUpColor=Chartreuse";
+            series3.Legend = "Legend1";
+            series3.Name = "Series_OHLC";
+            series3.XValueMember = "Date";
+            series3.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.DateTime;
+            series3.YValueMembers = "High,Low,Open,Close";
+            series3.YValuesPerPoint = 4;
+            series3.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.UInt64;
+            series4.ChartArea = "ChartArea_Volume";
+            series4.Legend = "Legend1";
+            series4.Name = "Series_Volume";
+            series4.XValueMember = "Date";
+            series4.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.DateTime;
+            series4.YValueMembers = "Volume";
+            series4.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.UInt64;
+            this.chart1.Series.Add(series3);
+            this.chart1.Series.Add(series4);
+            this.chart1.Size = new System.Drawing.Size(1175, 409);
+            this.chart1.TabIndex = 11;
+            this.chart1.Text = "chart1";
+            this.chart1.Click += new System.EventHandler(this.chart1_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1893, 781);
+            this.Controls.Add(this.chart1);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.pickStockButton);
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.dateTimePicker2);
+            this.Controls.Add(this.dateTimePicker_End);
             this.Controls.Add(this.comboBox1);
-            this.Controls.Add(this.dateTimePicker1);
-            this.Controls.Add(this.button);
+            this.Controls.Add(this.dateTimePicker_Start);
             this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.Name = "MainForm";
             this.Text = " ";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Button button;
-        private System.Windows.Forms.DateTimePicker dateTimePicker1;
+        private System.Windows.Forms.DateTimePicker dateTimePicker_Start;
         private System.DirectoryServices.DirectorySearcher directorySearcher1;
         private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.DateTimePicker dateTimePicker2;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.DateTimePicker dateTimePicker_End;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.OpenFileDialog openFileDialog_SymbolChooser;
         private System.Windows.Forms.Button pickStockButton;
         private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
     }
 }
 
