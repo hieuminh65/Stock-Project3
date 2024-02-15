@@ -65,6 +65,12 @@ namespace empty
             // Reads the stock data from the selected file
             listOfCandleStick = readCandlesticksFromFile(fileName);
 
+            // Filters the candlesticks based on the date range
+            listOfCandleStick = filterCandlesticks(listOfCandleStick);
+
+            // Normalizes the volume data for better visualization in the chart
+            normalizeChart();
+
             // Immediately filter and display the read data
             UpdateDisplayedData(); // Call a method to filter and display data
         }
@@ -97,7 +103,7 @@ namespace empty
         {
             // Defines the expected format of the first line in the file
             const string referenceString = "Date,Open,High,Low,Close,Adj Close,Volume";
-            
+
             // Opens the file for reading
             using (StreamReader sr = new StreamReader(filename))
             {
@@ -123,7 +129,7 @@ namespace empty
                     listOfCandleStick.Add(cs);
                 }
             }
-            
+
             // Returns the list of filtered candlesticks
             return listOfCandleStick;
         }
@@ -137,17 +143,29 @@ namespace empty
         /// </summary>
         /// <param name="candlesticks">Filtered list of candlesticks to display.</param>
         private void displayCandlesticks(List<Candlestick> candlesticks)
-        {   
+        {
             // Clear the existing data bindings
             dataGridView1.DataSource = null;
             chart1.DataSource = null;
-            
-            boundCandlesticks = new BindingList<Candlestick>(candlesticks);
-            // Bind the provided list of candlesticks to the DataGridView
-            dataGridView1.DataSource = boundCandlesticks;
-            // Bind the provided list of candlesticks to the chart
-            chart1.DataSource = boundCandlesticks;
+
+            // Reset the chart series data
+            chart1.Series["Series_OHLC"].Points.Clear();
+            chart1.Series["Series_Volume"].Points.Clear();
+
+            foreach (var cs in candlesticks)
+            {
+                // Assuming your OHLC series is a candlestick series
+                int index = chart1.Series["Series_OHLC"].Points.AddXY(cs.date, cs.high, cs.low, cs.open, cs.close);
+                chart1.Series["Series_OHLC"].Points[index].ToolTip = $"Open: {cs.open}\nHigh: {cs.high}\nLow: {cs.low}\nClose: {cs.close}";
+
+                // For the Volume series, assuming 'date' is the X-value and 'volume' is the Y-value
+                chart1.Series["Series_Volume"].Points.AddXY(cs.date, cs.volume);
+            }
+
+            // Rebind the DataGridView with the new or updated list
+            dataGridView1.DataSource = new BindingList<Candlestick>(candlesticks);
         }
+
 
 
         /// <summary>
@@ -155,29 +173,33 @@ namespace empty
         /// </summary>
         private void normalizeChart()
         {
-            // Assuming you have a volume series in your chart named "VolumeSeries"
-            if (chart1.Series["VolumeSeries"].Points.Count == 0) return; // Ensure there are points to normalize
+            // Check if there are any candlesticks to work with
+            if (!listOfCandleStick.Any()) return;
 
+            // Find the maximum high and minimum low of the candlesticks
+            decimal maxHigh = listOfCandleStick.Max(cs => cs.high);
+            decimal minLow = listOfCandleStick.Min(cs => cs.low);
+
+            // Calculate adjustments of 2% for both maximum and minimum values
+            decimal range = maxHigh - minLow;
+            decimal adjustment = range * 0.02m; // 2% adjustment
+
+            maxHigh += adjustment; // Add 2% to the maximum
+            minLow -= adjustment; // Subtract 2% from the minimum
+
+            // Set the Y axis's minimum and maximum for the OHLC ChartArea
+            chart1.ChartAreas["ChartArea_OHLC"].AxisY.Minimum = (double)minLow;
+            chart1.ChartAreas["ChartArea_OHLC"].AxisY.Maximum = (double)maxHigh;
+
+            // Assuming you want to normalize volume in a similar way but using the full range 0 to maxVolume
             // Find the maximum volume in the candlestick list for normalization
-            double maxVolume = listOfCandleStick.Max(cs => cs.volume);
+            long maxVolume = listOfCandleStick.Max(cs => cs.volume);
 
-            // Normalize and update each point in the volume series
-            foreach (var cs in listOfCandleStick)
-            {
-                // Calculate the normalized volume as a percentage of the max volume
-                double normalizedVolume = (cs.volume / maxVolume) * 100;
-
-                // Find the corresponding point in the chart and update its Y value
-                var point = chart1.Series["VolumeSeries"].Points.FirstOrDefault(p => p.AxisLabel == cs.date.ToString("d"));
-                if (point != null)
-                {
-                    point.SetValueY(normalizedVolume);
-                }
-            }
-
-            // Adjust the Y-axis scale to fit the normalized data
-            chart1.ChartAreas["ChartArea1"].AxisY2.Maximum = 100; // Assuming the use of a secondary Y-axis for volume
+            // Assuming your volume chart area is using a different Y axis (e.g., AxisY2 for secondary axis)
+            chart1.ChartAreas["ChartArea_Volume"].AxisY2.Minimum = 0; // Start from 0 for volume
+            chart1.ChartAreas["ChartArea_Volume"].AxisY2.Maximum = maxVolume; // Set to the maximum volume
         }
+
 
 
         // Placeholder method for form load event
@@ -209,16 +231,8 @@ namespace empty
         {
             if (listOfCandleStick != null && listOfCandleStick.Any())
             {
-                // Filters the candlesticks based on the date range
-                var filteredCandlesticks = filterCandlesticks(listOfCandleStick);
-                
                 // Display the filtered candlesticks in the DataGridView and potentially update the chart
-                displayCandlesticks(filteredCandlesticks);
-
-                // Normalize the volume data for better visualization in the chart
-                // normalizeChart();
-
-                
+                displayCandlesticks(listOfCandleStick);
             }
         }
 
@@ -233,6 +247,6 @@ namespace empty
         {
         }
 
-        
+
     }
 }
