@@ -40,27 +40,26 @@ namespace empty
             dateTimePicker_Start.ValueChanged += dateTimePicker_Start_ValueChanged;
             // Add event handlers when the date pickers' values change
             dateTimePicker_End.ValueChanged += dateTimePicker_End_ValueChanged;
+            // Initialize the combo box with the choice of all stocks
+            Symbol_Picker.Items.Add("All Stocks");
             // Initialize the combo box with available symbols
-            InitializeSymbolPicker(new List<string> { "AAPL", "ABNB", "META", "NVDA" });
+            InitializeSymbolPicker(new List<string> { "AAPL", "ABNB", "META", "NVDA", "MSFT" });
             // Initialize the combo box with available periods
+            Period_Picker.Items.Add("Monthly");
             Period_Picker.Items.Add("Daily");
             Period_Picker.Items.Add("Weekly");
-            Period_Picker.Items.Add("Monthly");
             // Intialize current choosen period
             Period_Picker.SelectedIndex = 0;
             // Initialize currect choosen symbol
-            
+            Symbol_Picker.SelectedIndex = 0;
         }
 
         /// <summary>
         /// Initializes the symbol picker with the provided list of symbols.
         /// </summary>
-        /// <param name="symbolList"></param>
+        /// <param name="symbolList">All the symbols available</param>
         private void InitializeSymbolPicker(List<string> symbolList)
         {
-            // Clear existing items to avoid duplicates if the method is called multiple times
-            Symbol_Picker.Items.Clear();
-
             // Loop through all the items in the list and add them to the ComboBox
             foreach (var symbol in symbolList)
             {   
@@ -80,32 +79,44 @@ namespace empty
             // Default to showing all CSV files if period not matched
             string periodFilter = "*.csv";
 
-            // Set the filter based on the selected period
-            switch (period)
+            // Adjust the filter based on the selected period, ignoring symbol if "All Stocks" is selected
+            if (symbol != "All Stocks")
             {   
-                // Set the filter based on the selected period
-                case "Daily":
-                    // Set the filter based on the selected period
-                    periodFilter = $"{symbol}-Day.csv";
-                    // Break the switch statement
-                    break;
-                // Set the filter based on the selected period
-                case "Weekly":
-                    // Set the filter based on the selected period
-                    periodFilter = $"{symbol}-Week.csv";
-                    // Break the switch statement
-                    break;
-                // Set the filter based on the selected period
-                case "Monthly":
-                    // Set the filter based on the selected period
-                    periodFilter = $"{symbol}-Month.csv";
-                    // Break the switch statement
-                    break;
+                // Adjust the filter to include the symbol and period
+                switch (period)
+                {
+                    case "Daily":
+                        periodFilter = symbol + "-Day.csv";
+                        break;
+                    case "Weekly":
+                        periodFilter = symbol + "-Week.csv";
+                        break;
+                    case "Monthly":
+                        periodFilter = symbol + "-Month.csv";
+                        break;
+                }
+            }
+            else
+            {
+                // If "All Stocks" is selected, adjust the filter to include all files for the period without symbol specificity
+                switch (period)
+                {
+                    case "Daily":
+                        periodFilter = "*-Day.csv";
+                        break;
+                    case "Weekly":
+                        periodFilter = "*-Week.csv";
+                        break;
+                    case "Monthly":
+                        periodFilter = "*-Month.csv";
+                        break;
+                }
             }
 
             // Construct and return the filter string
-            return $"{symbol} {period} Files ({periodFilter})|{periodFilter}";
+            return period + " Files (" + periodFilter + ")|" + periodFilter;
         }
+
 
         /// <summary>
         /// Event handler for the 'Pick Stock' button click event
@@ -123,6 +134,7 @@ namespace empty
 
                 // Construct the filter string based on the selected symbol and period
                 string filter = ConstructFilterString(selectedSymbol, selectedPeriod);
+                // Set the filter string to the OpenFileDialog
                 openFileDialog_SymbolChooser.Filter = filter;
 
                 // Show the OpenFileDialog
@@ -176,6 +188,17 @@ namespace empty
         }
 
         /// <summary>
+        /// Version 2 of the filterCandlesticks method
+        /// </summary>
+        private void filterCandlesticks()
+        {   
+            // Filter the candlesticks based on the date range
+            List<Candlestick> filteredCandlesticks = filterCandlesticks(listOfCandleStick);
+            // Display the filtered candlesticks in the DataGridView and potentially update the chart
+            displayCandlesticks(filteredCandlesticks);
+        }
+
+        /// <summary>
         /// Method to read stock data from a file and load it into the list
         /// </summary>
         /// <param name="filename">"The file that need to be read"</param>
@@ -213,6 +236,26 @@ namespace empty
 
             // Returns the list of filtered candlesticks
             return listOfCandleStick;
+        }
+
+        /// <summary>
+        /// Version 2 of the readCandlesticksFromFile method
+        /// </summary>
+        private void readCandlesticksFromFile()
+        {
+            // Get the selected file name from the file dialog
+            string fileName = openFileDialog_SymbolChooser.FileName;
+            // Reads the stock data from the selected file
+            listOfCandleStick = readCandlesticksFromFile(fileName);
+
+            // Filters the candlesticks based on the date range
+            listOfCandleStick = filterCandlesticks(listOfCandleStick);
+
+            // Normalizes the volume data for better visualization in the chart
+            normalizeChart();
+
+            // Immediately filter and display the read data
+            UpdateDisplayedData();
         }
 
         /// <summary>
@@ -343,11 +386,13 @@ namespace empty
         {
         }
 
+        // Placeholder method for symbol picker selected index changed event
         private void Period_Picker_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
 
+        // Placeholder method for text box 4 text changed event
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
 
