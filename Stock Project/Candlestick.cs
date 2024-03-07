@@ -20,6 +20,18 @@ namespace Stock_Project
         public decimal low { get; set; }
         public long volume { get; set; }
 
+
+        // Constructor for creating aCandleStick instance with specified values
+        public Candlestick(DateTime date = default, decimal open = 0, decimal high = 0, decimal low = 0, decimal close = 0, long volume = 0)
+        {
+            this.date = date;
+            this.open = open;
+            this.high = high;
+            this.low = low;
+            this.close = close;
+            this.volume = volume;
+        }
+
         /// <summary>
         /// Constructor that takes a string representing a row of stock data
         /// </summary>

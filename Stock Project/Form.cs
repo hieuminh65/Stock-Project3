@@ -20,6 +20,8 @@ namespace empty
     {
         // Declaration of a list to hold Candlestick objects
         List<Candlestick> listOfCandleStick = null;
+        // Declaratio of a list to hold Candlestick objects which will be not modified
+        List<Candlestick> listOfCandleStickUnmodified = null;
         // Declaration of a binding list for data binding with UI controls
         private BindingList<Candlestick> boundCandlesticks = null;
 
@@ -30,91 +32,14 @@ namespace empty
             InitializeComponent();
             // Initializes the list of Candlestick objects with a capacity of 1024
             listOfCandleStick = new List<Candlestick>(1024);
+            // Initualizes a list of Candlestick objects which will be not modified
+            listOfCandleStickUnmodified = new List<Candlestick>(1024);
             // Initializes the binding list for Candlestick objects
             boundCandlesticks = new BindingList<Candlestick>();
             // Sets the end date DateTimePicker to today's date
             dateTimePicker_End.Value = DateTime.Now;
             // Sets the start date DateTimePicker to the same day last year
             dateTimePicker_Start.Value = new DateTime(2022,1,1);
-            // Add event handlers when the date pickers' values change
-            dateTimePicker_Start.ValueChanged += dateTimePicker_Start_ValueChanged;
-            // Add event handlers when the date pickers' values change
-            dateTimePicker_End.ValueChanged += dateTimePicker_End_ValueChanged;
-            // Initialize the combo box with the choice of all stocks
-            Symbol_Picker.Items.Add("All Stocks");
-            // Initialize the combo box with available symbols
-            InitializeSymbolPicker(new List<string> { "AAPL", "ABNB", "META", "NVDA", "MSFT" });
-            // Initialize the combo box with available periods
-            Period_Picker.Items.Add("Monthly");
-            Period_Picker.Items.Add("Daily");
-            Period_Picker.Items.Add("Weekly");
-            // Intialize current choosen period
-            Period_Picker.SelectedIndex = 0;
-            // Initialize currect choosen symbol
-            Symbol_Picker.SelectedIndex = 0;
-        }
-
-        /// <summary>
-        /// Initializes the symbol picker with the provided list of symbols.
-        /// </summary>
-        /// <param name="symbolList">All the symbols available</param>
-        private void InitializeSymbolPicker(List<string> symbolList)
-        {
-            // Loop through all the items in the list and add them to the ComboBox
-            foreach (var symbol in symbolList)
-            {   
-                // Add the symbol to the ComboBox
-                Symbol_Picker.Items.Add(symbol);
-            }
-        }
-
-        /// <summary>
-        /// Helper method to construct the filter string for the OpenFileDialog
-        /// </summary>
-        /// <param name="symbol">The filtered symbol</param>
-        /// <param name="period">The filtered period</param>
-        /// <returns></returns>
-        private string ConstructFilterString(string symbol, string period)
-        {
-            // Default to showing all CSV files if period not matched
-            string periodFilter = "*.csv";
-
-            // Adjust the filter based on the selected period, ignoring symbol if "All Stocks" is selected
-            if (symbol != "All Stocks")
-            {   
-                // Adjust the filter to include the symbol and period
-                switch (period)
-                {
-                    case "Daily":
-                        periodFilter = symbol + "-Day.csv";
-                        break;
-                    case "Weekly":
-                        periodFilter = symbol + "-Week.csv";
-                        break;
-                    case "Monthly":
-                        periodFilter = symbol + "-Month.csv";
-                        break;
-                }
-            }
-            else
-            {
-                // If "All Stocks" is selected, adjust the filter to include all files for the period without symbol specificity
-                switch (period)
-                {
-                    case "Daily":
-                        periodFilter = "*-Day.csv";
-                        break;
-                    case "Weekly":
-                        periodFilter = "*-Week.csv";
-                        break;
-                    case "Monthly":
-                        periodFilter = "*-Month.csv";
-                        break;
-                }
-            }
-
-            // Construct and return the filter string
-            return period + " Files (" + periodFilter + ")|" + periodFilter;
         }
 
 
@@ -125,25 +50,8 @@ namespace empty
         /// <param name="e"></param>
         private void button_PickStock_Click(object sender, EventArgs e)
         {
-            // Check if both symbol and period are selected
-            if (Symbol_Picker.SelectedItem != null && Period_Picker.SelectedItem != null)
-            {   
-                // Get the selected symbol and period
-                string selectedSymbol = Symbol_Picker.SelectedItem.ToString();
-                string selectedPeriod = Period_Picker.SelectedItem.ToString();
-
-                // Construct the filter string based on the selected symbol and period
-                string filter = ConstructFilterString(selectedSymbol, selectedPeriod);
-                // Set the filter string to the OpenFileDialog
-                openFileDialog_SymbolChooser.Filter = filter;
-
-                // Show the OpenFileDialog
-                DialogResult result = openFileDialog_SymbolChooser.ShowDialog(this);
-            }
-            else { 
-                // Show a message box if symbol and period are not selected
-                MessageBox.Show("Please select a symbol and a period");
-            }
+            // Show the OpenFileDialog
+            DialogResult result = openFileDialog_SymbolChooser.ShowDialog(this);
         }
 
         /// <summary>
@@ -157,9 +65,11 @@ namespace empty
             string fileName = openFileDialog_SymbolChooser.FileName;
             // Reads the stock data from the selected file
             listOfCandleStick = readCandlesticksFromFile(fileName);
+            // Store an unmodified list of candlesticks
+            listOfCandleStickUnmodified = new List<Candlestick>(listOfCandleStick);
 
             // Filters the candlesticks based on the date range
-            listOfCandleStick = filterCandlesticks(listOfCandleStick);
+            listOfCandleStick = filterCandlesticks(listOfCandleStickUnmodified);
 
             // Normalizes the volume data for better visualization in the chart
             normalizeChart();
@@ -247,9 +157,11 @@ namespace empty
             string fileName = openFileDialog_SymbolChooser.FileName;
             // Reads the stock data from the selected file
             listOfCandleStick = readCandlesticksFromFile(fileName);
-
+            // Store an unmodified list of candlesticks
+            listOfCandleStickUnmodified = new List<Candlestick>(listOfCandleStick);
+            
             // Filters the candlesticks based on the date range
-            listOfCandleStick = filterCandlesticks(listOfCandleStick);
+            listOfCandleStick = filterCandlesticks(listOfCandleStickUnmodified);
 
             // Normalizes the volume data for better visualization in the chart
             normalizeChart();
@@ -269,26 +181,17 @@ namespace empty
         private void displayCandlesticks(List<Candlestick> candlesticks)
         {
             // Clear the existing data bindings
-            dataGridView1.DataSource = null;
-            chart1.DataSource = null;
+            dataGridView_Stock.DataSource = null;
+            chart_Stock.DataSource = null;
 
             // Reset the chart series data
-            chart1.Series["Series_OHLC"].Points.Clear();
-            chart1.Series["Series_Volume"].Points.Clear();
-
-            foreach (var cs in candlesticks)
-            {
-                // OHLC series is a candlestick series, so we add the data points as a set of 4 values
-                int index = chart1.Series["Series_OHLC"].Points.AddXY(cs.date, cs.high, cs.low, cs.open, cs.close);
-                // Set the tooltip for the data point
-                chart1.Series["Series_OHLC"].Points[index].ToolTip = $"Open: {cs.open}\nHigh: {cs.high}\nLow: {cs.low}\nClose: {cs.close}";
-
-                // For the Volume series, 'date' is the X-value and 'volume' is the Y-value
-                chart1.Series["Series_Volume"].Points.AddXY(cs.date, cs.volume);
-            }
+            chart_Stock.Series["Series_OHLC"].Points.Clear();
+            chart_Stock.Series["Series_Volume"].Points.Clear();
 
             // Rebind the DataGridView with the new or updated list
-            dataGridView1.DataSource = new BindingList<Candlestick>(candlesticks);
+            dataGridView_Stock.DataSource = new BindingList<Candlestick>(candlesticks);
+            // Rebind the chart with the new or updated list
+            chart_Stock.DataSource = new BindingList<Candlestick>(candlesticks);
         }
 
 
@@ -312,16 +215,16 @@ namespace empty
             minLow -= adjustment; // Subtract 2% from the minimum
 
             // Set the Y axis's minimum and maximum for the OHLC ChartArea
-            chart1.ChartAreas["ChartArea_OHLC"].AxisY.Minimum = (double)minLow;
-            chart1.ChartAreas["ChartArea_OHLC"].AxisY.Maximum = (double)maxHigh;
+            chart_Stock.ChartAreas["ChartArea_OHLC"].AxisY.Minimum = (double)minLow;
+            chart_Stock.ChartAreas["ChartArea_OHLC"].AxisY.Maximum = (double)maxHigh;
 
             // Normalize volume in a similar way but using the full range 0 to maxVolume
             // Find the maximum volume in the candlestick list for normalization
             long maxVolume = listOfCandleStick.Max(cs => cs.volume);
 
             // Set the Y axis's minimum and maximum for the Volume ChartArea
-            chart1.ChartAreas["ChartArea_Volume"].AxisY2.Minimum = 0; // Start from 0 for volume
-            chart1.ChartAreas["ChartArea_Volume"].AxisY2.Maximum = maxVolume; // Set to the maximum volume
+            chart_Stock.ChartAreas["ChartArea_Volume"].AxisY2.Minimum = 0; // Start from 0 for volume
+            chart_Stock.ChartAreas["ChartArea_Volume"].AxisY2.Maximum = maxVolume; // Set to the maximum volume
         }
 
         /// <summary>
@@ -332,7 +235,7 @@ namespace empty
         private void dateTimePicker_Start_ValueChanged(object sender, EventArgs e)
         {   
             // Filter the candlesticks based on the date range
-            listOfCandleStick = filterCandlesticks(listOfCandleStick);
+            listOfCandleStick = filterCandlesticks(listOfCandleStickUnmodified);
             // Update the displayed data
             UpdateDisplayedData();
         }
@@ -345,7 +248,7 @@ namespace empty
         private void dateTimePicker_End_ValueChanged(object sender, EventArgs e)
         {   
             // Filter the candlesticks based on the date range
-            listOfCandleStick = filterCandlesticks(listOfCandleStick);
+            listOfCandleStick = filterCandlesticks(listOfCandleStickUnmodified);
             // Update the displayed data
             UpdateDisplayedData();
         }
@@ -396,6 +299,14 @@ namespace empty
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void button_updateDate_Click(object sender, EventArgs e)
+        {   
+            // Filter the candlesticks based on the date range
+            listOfCandleStick = filterCandlesticks(listOfCandleStickUnmodified);
+            // Update the displayed data
+            UpdateDisplayedData();
         }
     }
 }
