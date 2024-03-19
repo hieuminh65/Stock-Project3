@@ -25,7 +25,9 @@ namespace Stock_Project
         public Boolean isDragonFlyDoji { get; set; }
         public Boolean isGraveStoneDoji { get; set; }
         public Boolean isHammer { get; set; }
-        public Boolean isInvertedHammer { get; set; }
+
+        // Initialize Dictionary for Patterns
+        public Dictionary<string, bool> Patterns { get; private set; }
 
         // Static variable for doji buffer
         static Decimal dojiBuffer = 0.05M;
@@ -40,12 +42,29 @@ namespace Stock_Project
             this.low = cs.low;
             this.date = cs.date;
 
-            // Calculate additional properties and patterns
+            // initialize the dictionaries, calculate additional properties and patterns
+            initializePatternsDictionary();
             computeHigherProperties();
             computePatterns();
         }
 
-        // Method to compute higher-level properties of the candlestick
+        //
+        void initializePatternsDictionary()
+        {
+            Patterns = new Dictionary<string, bool>
+            {
+                { "Bullish", false },
+                { "Bearish", false },
+                { "Neutral", false },
+                { "Marubozu", false },
+                { "Doji", false },
+                { "DragonFlyDoji", false },
+                { "GraveStoneDoji", false },
+                { "Hammer", false }
+            };
+        }
+
+        // Compute higher-level properties of the candlestick
         void computeHigherProperties()
         {
             range = high - low;
@@ -56,69 +75,71 @@ namespace Stock_Project
             bottomTail = Math.Max(bottomPrice - low, 0);
         }
 
-        // Method to compute candlestick patterns
+        // Compute candlestick patterns
         void computePatterns()
         {
             isBullish = isBullishcs();
+            Patterns["Bullish"] = isBullish;
             isBearish = isBearishcs();
+            Patterns["Bearish"] = isBearish;
             isNeutral = isNeutralcs();
+            Patterns["Neutral"] = isNeutral;
             isMarubozu = isMarubozucs();
+            Patterns["Marubozu"] = isMarubozu;
             isDoji = isDojics();
+            Patterns["Doji"] = isDoji;
             isDragonFlyDoji = isDragonFlyDojics();
+            Patterns["DragonFlyDoji"] = isDragonFlyDoji;
             isGraveStoneDoji = isGraveStoneDojics();
+            Patterns["GraveStoneDoji"] = isGraveStoneDoji;
             isHammer = isHammercs();
-            isInvertedHammer = isInvertedHammercs();
         }
 
-        // Method to check if the candlestick is bullish
+        // Check if the candlestick is bullish
         Boolean isBullishcs()
         {
             return open < close;
         }
 
-        // Method to check if the candlestick is neutral
+        // Check if the candlestick is neutral
         Boolean isNeutralcs()
         {
             return (bodyRange <= 0.5M * range) && (topTail <= 0.1M * range) && (bottomTail <= 0.1M * range);
         }
 
-        // Method to check if the candlestick is bearish
+        // Check if the candlestick is bearish
         Boolean isBearishcs()
         {
             return open > close;
         }
 
-        // Method to check if the candlestick is a Marubozu
+        // Check if the candlestick is a Marubozu
         Boolean isMarubozucs()
         {
             return bodyRange == range;
         }
 
-        // Method to check if the candlestick is a Doji
+        // Check if the candlestick is a Doji
         Boolean isDojics()
         {
             return bodyRange < dojiBuffer * open;
         }
 
-        // Method to check if the candlestick is a Hammer
+        // Check if the candlestick is a Hammer
         Boolean isHammercs()
         {
             return topTail < 0.03M * range && bodyRange >= 0.2M * range && bodyRange <= 0.3M * range;
         }
 
-        // Method to check if the candlestick is an Inverted Hammer
-        Boolean isInvertedHammercs()
-        {
-            return bottomTail < 0.03M * range && bodyRange >= 0.2M * range && bodyRange <= 0.3M * range;
-        }
 
-        // Method to check if the candlestick is a Dragonfly Doji
+
+        // Check if the candlestick is a Dragonfly Doji
         Boolean isDragonFlyDojics()
         {
             return (bodyRange < 0.1M * range) && (bottomTail <= 0.1M * range) && (topTail >= 2 * bottomTail);
         }
 
-        // Method to check if the candlestick is a Gravestone Doji
+        // Check if the candlestick is a Gravestone Doji
         Boolean isGraveStoneDojics()
         {
             return (bodyRange < 0.1M * range) && (topTail <= 0.1M * range) && (bottomTail >= 2 * topTail);

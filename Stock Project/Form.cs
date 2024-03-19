@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 // Namespace declaration
 namespace empty
@@ -20,10 +21,12 @@ namespace empty
     {
         // Declaration of a list to hold Candlestick objects
         List<Candlestick> listOfCandleStick = null;
-        // Declaratio of a list to hold Candlestick objects which will be not modified
+        // Declaratino of a list to hold Candlestick objects which will be not modified
         List<Candlestick> listOfCandleStickUnmodified = null;
         // Declaration of a binding list for data binding with UI controls
         private BindingList<Candlestick> boundCandlesticks = null;
+        // Declaration of smart Candlesticks
+        private BindingList<smartCandleStick> smartCandleSticks = null;
 
         // Constructor for the MainForm class
         public MainForm()
@@ -36,10 +39,13 @@ namespace empty
             listOfCandleStickUnmodified = new List<Candlestick>(1024);
             // Initializes the binding list for Candlestick objects
             boundCandlesticks = new BindingList<Candlestick>();
+            // Initializes the binding list for smartCandlestick
+            smartCandleSticks = new BindingList<smartCandleStick>();
             // Sets the end date DateTimePicker to today's date
             dateTimePicker_End.Value = DateTime.Now;
             // Sets the start date DateTimePicker to the same day last year
             dateTimePicker_Start.Value = new DateTime(2022,1,1);
+            // 
         }
 
 
@@ -52,6 +58,15 @@ namespace empty
         {
             // Show the OpenFileDialog
             DialogResult result = openFileDialog_SymbolChooser.ShowDialog(this);
+
+            if (result == DialogResult.OK)
+            {
+                // Create a new instance of MainForm
+                MainForm newStockForm = new MainForm();
+
+                // Load and display the stock data in the new form
+                newStockForm.Show(); // Show the new MainForm instance
+            }
         }
 
         /// <summary>
@@ -70,6 +85,12 @@ namespace empty
 
             // Filters the candlesticks based on the date range
             listOfCandleStick = filterCandlesticks(listOfCandleStickUnmodified);
+
+            // Insert data into the smartCandleSticks list
+            smartCandleSticks = new BindingList<smartCandleStick>(listOfCandleStick.Select(cs => new smartCandleStick(cs)).ToList());
+            
+            // Load recognized patterns into the ComboBox
+            LoadRecognizedPatternsIntoComboBox();
 
             // Normalizes the volume data for better visualization in the chart
             normalizeChart();
@@ -181,19 +202,40 @@ namespace empty
         private void displayCandlesticks(List<Candlestick> candlesticks)
         {
             // Clear the existing data bindings
-            dataGridView_Stock.DataSource = null;
             chart_Stock.DataSource = null;
 
             // Reset the chart series data
             chart_Stock.Series["Series_OHLC"].Points.Clear();
             chart_Stock.Series["Series_Volume"].Points.Clear();
 
-            // Rebind the DataGridView with the new or updated list
-            dataGridView_Stock.DataSource = new BindingList<Candlestick>(candlesticks);
             // Rebind the chart with the new or updated list
             chart_Stock.DataSource = new BindingList<Candlestick>(candlesticks);
         }
 
+        private void LoadRecognizedPatternsIntoComboBox()
+        {
+            comboBox_PatternPicker.Items.Clear();
+
+            // Aggregate recognized patterns across all smartCandleSticks instances
+            var recognizedPatterns = new HashSet<string>(); // Use HashSet to avoid duplicates
+
+            foreach (var scs in smartCandleSticks)
+            {
+                foreach (var pattern in scs.Patterns)
+                {
+                    if (pattern.Value) // If the pattern is recognized (true)
+                    {
+                        recognizedPatterns.Add(pattern.Key); // Add it to the HashSet
+                    }
+                }
+            }
+
+            // Load the recognized patterns into the ComboBox
+            foreach (var pattern in recognizedPatterns)
+            {
+                comboBox_PatternPicker.Items.Add(pattern);
+            }
+        }
 
         /// <summary>
         /// Normalizes the volume data for better visualization in the chart.
@@ -253,6 +295,33 @@ namespace empty
             UpdateDisplayedData();
         }
 
+        private void AnnotateChartForPattern(string pattern)
+        {
+            // Assuming each point in the chart series corresponds to a candlestick in your list
+            for (int i = 0; i < chart_Stock.Series["Series_OHLC"].Points.Count; i++)
+            {
+                var candleStick = smartCandleSticks[i]; // Ensure this matches your chart data points one-to-one
+                if (candleStick.Patterns.TryGetValue(pattern, out bool isPattern) && isPattern)
+                {
+                    // Example using an ArrowAnnotation
+                    var arrowAnnotation = new ArrowAnnotation
+                    {
+                        AnchorDataPoint = chart_Stock.Series["Series_OHLC"].Points[i],
+                        ArrowSize = 5,
+                        BackColor = Color.Transparent,
+                        ForeColor = Color.Red, // Color of the arrow
+                        Height = -10, // Negative value for upward arrow
+                        Width = 0,
+                        Y = -5 // Position the arrow above the candlestick
+                    };
+                    chart_Stock.Annotations.Add(arrowAnnotation);
+
+                    // For RectangleAnnotation, you would define it similarly and set its position and size to encompass the candlestick
+                }
+            }
+        }
+
+
         private void UpdateDisplayedData()
         {   
             // Check if there are any candlesticks to work with
@@ -263,50 +332,26 @@ namespace empty
             }
         }
 
-        // Placeholder method for form load event
-        private void Form1_Load(object sender, EventArgs e)
-        {
-        }
-
-        // Placeholder method for text box 1 text changed event
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-        }
-
-        // Placeholder method for text box 3 text changed event
-        private void textBox3_TextChanged(object sender, EventArgs e)
-        {
-        }
-
-
-        // Placeholder method for data grid view cell content click event
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-        }
-
-        // Placeholder method for chart click event
-        private void chart1_Click(object sender, EventArgs e)
-        {
-        }
-
-        // Placeholder method for symbol picker selected index changed event
-        private void Period_Picker_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        // Placeholder method for text box 4 text changed event
-        private void textBox4_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void button_updateDate_Click(object sender, EventArgs e)
         {   
             // Filter the candlesticks based on the date range
             listOfCandleStick = filterCandlesticks(listOfCandleStickUnmodified);
             // Update the displayed data
             UpdateDisplayedData();
+        }
+
+        private void comboBox_PatternPicker_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox_PatternPicker.SelectedItem != null)
+            {
+                string selectedPattern = comboBox_PatternPicker.SelectedItem.ToString();
+
+                // Clear existing annotations to avoid clutter
+                chart_Stock.Annotations.Clear();
+
+                // Annotate the chart for the selected pattern
+                AnnotateChartForPattern(selectedPattern);
+            }
         }
     }
 }
