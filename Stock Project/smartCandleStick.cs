@@ -17,14 +17,7 @@ namespace Stock_Project
         public Decimal bottomPrice { get; set; }
         public Decimal topTail { get; set; }
         public Decimal bottomTail { get; set; }
-        public Boolean isBullish { get; set; }
-        public Boolean isBearish { get; set; }
-        public Boolean isNeutral { get; set; }
-        public Boolean isMarubozu { get; set; }
-        public Boolean isDoji { get; set; }
-        public Boolean isDragonFlyDoji { get; set; }
-        public Boolean isGraveStoneDoji { get; set; }
-        public Boolean isHammer { get; set; }
+        
 
         // Initialize Dictionary for Patterns
         public Dictionary<string, bool> Patterns { get; private set; }
@@ -78,21 +71,21 @@ namespace Stock_Project
         // Compute candlestick patterns
         void computePatterns()
         {
-            isBullish = isBullishcs();
-            Patterns["Bullish"] = isBullish;
-            isBearish = isBearishcs();
-            Patterns["Bearish"] = isBearish;
-            isNeutral = isNeutralcs();
-            Patterns["Neutral"] = isNeutral;
-            isMarubozu = isMarubozucs();
-            Patterns["Marubozu"] = isMarubozu;
-            isDoji = isDojics();
-            Patterns["Doji"] = isDoji;
-            isDragonFlyDoji = isDragonFlyDojics();
-            Patterns["DragonFlyDoji"] = isDragonFlyDoji;
-            isGraveStoneDoji = isGraveStoneDojics();
-            Patterns["GraveStoneDoji"] = isGraveStoneDoji;
-            isHammer = isHammercs();
+            
+            Patterns["Bullish"] = isBullishcs();
+            
+            Patterns["Bearish"] = isBearishcs();
+            
+            Patterns["Neutral"] = isNeutralcs();
+            
+            Patterns["Marubozu"] = isMarubozucs();
+            
+            Patterns["Doji"] = isDojics();
+            
+            Patterns["DragonFlyDoji"] = isDragonFlyDojics();
+            
+            Patterns["GraveStoneDoji"] = isGraveStoneDojics();
+            
         }
 
         // Check if the candlestick is bullish

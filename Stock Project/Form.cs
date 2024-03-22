@@ -331,24 +331,41 @@ namespace empty
                 {
                     // Create an ArrowAnnotation for the selected pattern
                     var arrowAnnotation = new ArrowAnnotation
-                    {   
+                    {
                         // Set the anchor data point to the current candlestick
                         AnchorDataPoint = chart_Stock.Series["Series_OHLC"].Points[i],
                         // Set the arrow properties
-                        ArrowSize = 5,
-                        BackColor = Color.Transparent,
-                        ForeColor = Color.Red, // Color of the arrow
+                        ArrowSize = 5, // Size of the arrow
                         Height = -10, // Negative value for upward arrow
                         Width = 0, // Width of the arrow
                         Y = -5 // Position the arrow above the candlestick
                     };
+                    // Determine the height of the arrow annotation based on the candlestick's high and low values
+                    double above_cs_height = chart_Stock.ChartAreas[0].AxisY.Maximum - (double)(candleStick.high);
+                    // Determine the height of the arrow annotation based on the candlestick's high and low values
+                    double below_cs_height = (double)(candleStick.low) - chart_Stock.ChartAreas[0].AxisY.Minimum;
+                    // Set the height of the arrow annotation based on the higher value
+                    if (above_cs_height > below_cs_height)
+                    {   
+                        // Set the Y and Height properties for the arrow annotation if the high is higher
+                        arrowAnnotation.Y = (chart_Stock.ChartAreas[0].AxisY.Maximum + (double)(candleStick.high)) * 0.5;
+                        arrowAnnotation.Height = -10;
+                    }
+                    else
+                    {   
+                        // Set the Y and Height properties for the arrow annotation if the low is higher
+                        arrowAnnotation.Y = (chart_Stock.ChartAreas[0].AxisY.Minimum + (double)(candleStick.low)) * 0.5;
+                        arrowAnnotation.Height = 10;
+                    }
                     // Add the arrow annotation to the chart
                     chart_Stock.Annotations.Add(arrowAnnotation);
                 }
             }
         }
 
-
+        /// <summary>
+        /// Update the displayed data
+        /// </summary>
         private void UpdateDisplayedData()
         {   
             // Check if there are any candlesticks to work with
@@ -359,6 +376,11 @@ namespace empty
             }
         }
 
+        /// <summary>
+        /// Event handler for the 'Update Date' button click event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button_updateDate_Click(object sender, EventArgs e)
         {   
             // Filter the candlesticks based on the date range
@@ -367,10 +389,17 @@ namespace empty
             UpdateDisplayedData();
         }
 
+        /// <summary>
+        /// Update the chart annotations based on the selected pattern
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void comboBox_PatternPicker_SelectedIndexChanged(object sender, EventArgs e)
-        {
+        {   
+            // Check if an item is selected in the ComboBox
             if (comboBox_PatternPicker.SelectedItem != null)
-            {
+            {   
+                // Get the selected pattern from the ComboBox
                 string selectedPattern = comboBox_PatternPicker.SelectedItem.ToString();
 
                 // Clear existing annotations to avoid clutter

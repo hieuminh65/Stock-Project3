@@ -52,8 +52,8 @@
             this.openFileDialog_SymbolChooser.FileName = "openFileDialog_SymbolChooser";
             this.openFileDialog_SymbolChooser.Filter = "All Files|*.csv|Month|*-Month.csv|Day|*Day.csv|Week|*Week.csv";
             this.openFileDialog_SymbolChooser.FilterIndex = 2;
+
             this.openFileDialog_SymbolChooser.Title = "Choose Files";
-            this.openFileDialog_SymbolChooser.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
             // 
             // dateTimePicker_Start
             // 
