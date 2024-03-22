@@ -45,7 +45,6 @@ namespace empty
             dateTimePicker_End.Value = DateTime.Now;
             // Sets the start date DateTimePicker to the same day last year
             dateTimePicker_Start.Value = new DateTime(2022,1,1);
-            // 
         }
 
 
@@ -61,12 +60,15 @@ namespace empty
 
             // Show the OpenFileDialog
             DialogResult result = openFileDialog_SymbolChooser.ShowDialog(this);
+            // Check if the user selected a file
             if (result == DialogResult.OK)
             {
                 // Handle the first selected file with the current form
                 string firstFileName = openFileDialog_SymbolChooser.FileNames.FirstOrDefault();
+                // Check if a file was selected
                 if (!string.IsNullOrEmpty(firstFileName))
-                {
+                {   
+                    // Load the stock data from the selected file
                     LoadStockFromFile(firstFileName);
                 }
 
@@ -75,59 +77,44 @@ namespace empty
                 {
                     // Create a new MainForm instance for each file
                     MainForm stockChartForm = new MainForm();
+                    // Load the stock data from the selected file
                     stockChartForm.LoadStockFromFile(fileName);
+                    // Show the new form
                     stockChartForm.Show();
                 }
             }
         }
 
+        /// <summary>
+        /// Method to load stock data from a file
+        /// </summary>
+        /// <param name="fileName">The file name</param>
         public void LoadStockFromFile(string fileName)
-        {
+        {   
+            // Read the candlesticks from the file
             listOfCandleStick = readCandlesticksFromFile(fileName);
+            // Check if the list of candlesticks is null or empty
             if (listOfCandleStick == null || listOfCandleStick.Count == 0)
-            {
+            {   
+                // Show an error message if there is no data to display
                 MessageBox.Show("No data to display for " + fileName, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
+            // Store an unmodified list of candlesticks
             listOfCandleStickUnmodified = new List<Candlestick>(listOfCandleStick);
+            // Filter the candlesticks based on the date range
             filterCandlesticks();
+            // Construct a list of smartCandleSticks from the list of Candlesticks
             smartCandleSticks = new BindingList<smartCandleStick>(listOfCandleStick.Select(cs => new smartCandleStick(cs)).ToList());
+            // Load the recognized patterns into the ComboBox
             LoadRecognizedPatternsIntoComboBox();
+            // Normalize the volume data for better visualization in the chart
             normalizeChart();
+            // Update the displayed data
             UpdateDisplayedData();
         }
 
-
-        /// <summary>
-        /// Event handler for the file dialog 'FileOk' event
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
-        {
-            // Gets the selected file name from the file dialog
-            string fileName = openFileDialog_SymbolChooser.FileName;
-            // Reads the stock data from the selected file
-            //listOfCandleStick = readCandlesticksFromFile(fileName);
-            //// Store an unmodified list of candlesticks
-            //listOfCandleStickUnmodified = new List<Candlestick>(listOfCandleStick);
-
-            //// Filters the candlesticks based on the date range
-            //listOfCandleStick = filterCandlesticks(listOfCandleStickUnmodified);
-
-            //// Insert data into the smartCandleSticks list
-            //smartCandleSticks = new BindingList<smartCandleStick>(listOfCandleStick.Select(cs => new smartCandleStick(cs)).ToList());
-            
-            //// Load recognized patterns into the ComboBox
-            //LoadRecognizedPatternsIntoComboBox();
-
-            //// Normalizes the volume data for better visualization in the chart
-            //normalizeChart();
-
-            //// Immediately filter and display the read data
-            //UpdateDisplayedData();
-        }
         /// <summary>
         /// Function to filter the candlesticks based on the date range
         /// </summary>
@@ -242,15 +229,17 @@ namespace empty
             chart_Stock.DataSource = new BindingList<Candlestick>(candlesticks);
         }
 
-        private void LoadRecognizedPatternsIntoComboBox()
-        {
+        private void LoadRecognizedPatternsIntoComboBox()   
+        {   
+            // Clear the existing items in the ComboBox
             comboBox_PatternPicker.Items.Clear();
 
             // Aggregate recognized patterns across all smartCandleSticks instances
             var recognizedPatterns = new HashSet<string>(); // Use HashSet to avoid duplicates
-
+            // Iterate over each smartCandleStick instance
             foreach (var scs in smartCandleSticks)
-            {
+            {   
+                // Iterate over each pattern in the current smartCandleStick instance
                 foreach (var pattern in scs.Patterns)
                 {
                     if (pattern.Value) // If the pattern is recognized (true)
@@ -262,7 +251,8 @@ namespace empty
 
             // Load the recognized patterns into the ComboBox
             foreach (var pattern in recognizedPatterns)
-            {
+            {   
+                // Add the pattern to the ComboBox
                 comboBox_PatternPicker.Items.Add(pattern);
             }
         }
@@ -325,28 +315,35 @@ namespace empty
             UpdateDisplayedData();
         }
 
+        /// <summary>
+        /// Annotate the chart for a specific pattern
+        /// </summary>
+        /// <param name="pattern">The selected pattern of user</param>
         private void AnnotateChartForPattern(string pattern)
         {
-            // Assuming each point in the chart series corresponds to a candlestick in your list
+            // Iterate over each smartCandleStick instance
             for (int i = 0; i < chart_Stock.Series["Series_OHLC"].Points.Count; i++)
-            {
-                var candleStick = smartCandleSticks[i]; // Ensure this matches your chart data points one-to-one
+            {   
+                // Get the current smartCandleStick instance
+                var candleStick = smartCandleSticks[i];
+                // Check if the current candlestick has the selected pattern
                 if (candleStick.Patterns.TryGetValue(pattern, out bool isPattern) && isPattern)
                 {
-                    // Example using an ArrowAnnotation
+                    // Create an ArrowAnnotation for the selected pattern
                     var arrowAnnotation = new ArrowAnnotation
-                    {
+                    {   
+                        // Set the anchor data point to the current candlestick
                         AnchorDataPoint = chart_Stock.Series["Series_OHLC"].Points[i],
+                        // Set the arrow properties
                         ArrowSize = 5,
                         BackColor = Color.Transparent,
                         ForeColor = Color.Red, // Color of the arrow
                         Height = -10, // Negative value for upward arrow
-                        Width = 0,
+                        Width = 0, // Width of the arrow
                         Y = -5 // Position the arrow above the candlestick
                     };
+                    // Add the arrow annotation to the chart
                     chart_Stock.Annotations.Add(arrowAnnotation);
-
-                    // For RectangleAnnotation, you would define it similarly and set its position and size to encompass the candlestick
                 }
             }
         }
