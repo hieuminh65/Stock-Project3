@@ -56,18 +56,48 @@ namespace empty
         /// <param name="e"></param>
         private void button_PickStock_Click(object sender, EventArgs e)
         {
+            // Configure OpenFileDialog to allow multiple file selections
+            openFileDialog_SymbolChooser.Multiselect = true;
+
             // Show the OpenFileDialog
             DialogResult result = openFileDialog_SymbolChooser.ShowDialog(this);
-
             if (result == DialogResult.OK)
             {
-                // Create a new instance of MainForm
-                MainForm newStockForm = new MainForm();
+                // Handle the first selected file with the current form
+                string firstFileName = openFileDialog_SymbolChooser.FileNames.FirstOrDefault();
+                if (!string.IsNullOrEmpty(firstFileName))
+                {
+                    LoadStockFromFile(firstFileName);
+                }
 
-                // Load and display the stock data in the new form
-                newStockForm.Show(); // Show the new MainForm instance
+                // Handle additional selected files with new forms
+                foreach (string fileName in openFileDialog_SymbolChooser.FileNames.Skip(1))
+                {
+                    // Create a new MainForm instance for each file
+                    MainForm stockChartForm = new MainForm();
+                    stockChartForm.LoadStockFromFile(fileName);
+                    stockChartForm.Show();
+                }
             }
         }
+
+        public void LoadStockFromFile(string fileName)
+        {
+            listOfCandleStick = readCandlesticksFromFile(fileName);
+            if (listOfCandleStick == null || listOfCandleStick.Count == 0)
+            {
+                MessageBox.Show("No data to display for " + fileName, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            listOfCandleStickUnmodified = new List<Candlestick>(listOfCandleStick);
+            filterCandlesticks();
+            smartCandleSticks = new BindingList<smartCandleStick>(listOfCandleStick.Select(cs => new smartCandleStick(cs)).ToList());
+            LoadRecognizedPatternsIntoComboBox();
+            normalizeChart();
+            UpdateDisplayedData();
+        }
+
 
         /// <summary>
         /// Event handler for the file dialog 'FileOk' event
@@ -79,24 +109,24 @@ namespace empty
             // Gets the selected file name from the file dialog
             string fileName = openFileDialog_SymbolChooser.FileName;
             // Reads the stock data from the selected file
-            listOfCandleStick = readCandlesticksFromFile(fileName);
-            // Store an unmodified list of candlesticks
-            listOfCandleStickUnmodified = new List<Candlestick>(listOfCandleStick);
+            //listOfCandleStick = readCandlesticksFromFile(fileName);
+            //// Store an unmodified list of candlesticks
+            //listOfCandleStickUnmodified = new List<Candlestick>(listOfCandleStick);
 
-            // Filters the candlesticks based on the date range
-            listOfCandleStick = filterCandlesticks(listOfCandleStickUnmodified);
+            //// Filters the candlesticks based on the date range
+            //listOfCandleStick = filterCandlesticks(listOfCandleStickUnmodified);
 
-            // Insert data into the smartCandleSticks list
-            smartCandleSticks = new BindingList<smartCandleStick>(listOfCandleStick.Select(cs => new smartCandleStick(cs)).ToList());
+            //// Insert data into the smartCandleSticks list
+            //smartCandleSticks = new BindingList<smartCandleStick>(listOfCandleStick.Select(cs => new smartCandleStick(cs)).ToList());
             
-            // Load recognized patterns into the ComboBox
-            LoadRecognizedPatternsIntoComboBox();
+            //// Load recognized patterns into the ComboBox
+            //LoadRecognizedPatternsIntoComboBox();
 
-            // Normalizes the volume data for better visualization in the chart
-            normalizeChart();
+            //// Normalizes the volume data for better visualization in the chart
+            //normalizeChart();
 
-            // Immediately filter and display the read data
-            UpdateDisplayedData();
+            //// Immediately filter and display the read data
+            //UpdateDisplayedData();
         }
         /// <summary>
         /// Function to filter the candlesticks based on the date range
