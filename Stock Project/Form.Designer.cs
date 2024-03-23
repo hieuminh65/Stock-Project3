@@ -37,7 +37,7 @@
             this.dateTimePicker_End = new System.Windows.Forms.DateTimePicker();
             this.textBox_startDate = new System.Windows.Forms.TextBox();
             this.textBox_endDate = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.textBox_search = new System.Windows.Forms.TextBox();
             this.pickStockButton = new System.Windows.Forms.Button();
             this.chart_Stock = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.button_updateDate = new System.Windows.Forms.Button();
@@ -89,17 +89,17 @@
             this.textBox_endDate.TabIndex = 6;
             this.textBox_endDate.Text = "End date";
             // 
-            // textBox3
+            // textBox_search
             // 
-            this.textBox3.AccessibleDescription = "";
-            this.textBox3.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.textBox3.Location = new System.Drawing.Point(55, 48);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.ReadOnly = true;
-            this.textBox3.Size = new System.Drawing.Size(295, 37);
-            this.textBox3.TabIndex = 7;
-            this.textBox3.Text = "Search a symbol";
+            this.textBox_search.AccessibleDescription = "";
+            this.textBox_search.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox_search.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.textBox_search.Location = new System.Drawing.Point(55, 48);
+            this.textBox_search.Name = "textBox_search";
+            this.textBox_search.ReadOnly = true;
+            this.textBox_search.Size = new System.Drawing.Size(295, 37);
+            this.textBox_search.TabIndex = 7;
+            this.textBox_search.Text = "Search a symbol";
             // 
             // pickStockButton
             // 
@@ -184,7 +184,7 @@
             this.Controls.Add(this.button_updateDate);
             this.Controls.Add(this.chart_Stock);
             this.Controls.Add(this.pickStockButton);
-            this.Controls.Add(this.textBox3);
+            this.Controls.Add(this.textBox_search);
             this.Controls.Add(this.textBox_endDate);
             this.Controls.Add(this.textBox_startDate);
             this.Controls.Add(this.dateTimePicker_End);
@@ -203,7 +203,7 @@
         private System.Windows.Forms.DateTimePicker dateTimePicker_End;
         private System.Windows.Forms.TextBox textBox_startDate;
         private System.Windows.Forms.TextBox textBox_endDate;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox textBox_search;
         private System.Windows.Forms.OpenFileDialog openFileDialog_SymbolChooser;
         private System.Windows.Forms.Button pickStockButton;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart_Stock;
