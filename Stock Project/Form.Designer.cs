@@ -30,7 +30,6 @@
         {
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.openFileDialog_SymbolChooser = new System.Windows.Forms.OpenFileDialog();
@@ -52,7 +51,6 @@
             this.openFileDialog_SymbolChooser.FileName = "openFileDialog_SymbolChooser";
             this.openFileDialog_SymbolChooser.Filter = "All Files|*.csv|Month|*-Month.csv|Day|*Day.csv|Week|*Week.csv";
             this.openFileDialog_SymbolChooser.FilterIndex = 2;
-
             this.openFileDialog_SymbolChooser.Title = "Choose Files";
             // 
             // dateTimePicker_Start
@@ -121,13 +119,12 @@
             chartArea2.Name = "ChartArea_Volume";
             this.chart_Stock.ChartAreas.Add(chartArea1);
             this.chart_Stock.ChartAreas.Add(chartArea2);
-            legend1.Name = "Legend1";
-            this.chart_Stock.Legends.Add(legend1);
             this.chart_Stock.Location = new System.Drawing.Point(55, 301);
             this.chart_Stock.Name = "chart_Stock";
             series1.ChartArea = "ChartArea_OHLC";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
             series1.CustomProperties = "PriceDownColor=Red, PriceUpColor=Chartreuse";
+            series1.IsXValueIndexed = true;
             series1.Legend = "Legend1";
             series1.Name = "Series_OHLC";
             series1.XValueMember = "Date";
