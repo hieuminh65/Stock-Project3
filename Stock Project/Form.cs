@@ -27,6 +27,8 @@ namespace empty
         private BindingList<Candlestick> boundCandlesticks = null;
         // Declaration of smart Candlesticks
         private BindingList<smartCandleStick> smartCandleSticks = null;
+        // Declaration of a recognizer list
+        private List<Recognizer> recognizersList = new List<Recognizer>();
 
         // Constructor for the MainForm class
         public MainForm()
@@ -91,6 +93,8 @@ namespace empty
         /// <param name="fileName">The file name</param>
         public void LoadStockFromFile(string fileName)
         {   
+            // Clear the combo box items
+            comboBox_PatternPicker.Items.Clear();
             // Read the candlesticks from the file
             listOfCandleStick = readCandlesticksFromFile(fileName);
             // Check if the list of candlesticks is null or empty
@@ -107,8 +111,8 @@ namespace empty
             filterCandlesticks();
             // Construct a list of smartCandleSticks from the list of Candlesticks
             smartCandleSticks = new BindingList<smartCandleStick>(listOfCandleStick.Select(cs => new smartCandleStick(cs)).ToList());
-            // Load the recognized patterns into the ComboBox
-            LoadRecognizedPatternsIntoComboBox();
+            // Add the patterns to the smartCandleSticks
+            smartCandleSticks = new BindingList<smartCandleStick>(checkPattern(smartCandleSticks.ToList()));
             // Normalize the volume data for better visualization in the chart
             normalizeChart();
             // Update the displayed data
@@ -229,33 +233,6 @@ namespace empty
             chart_Stock.DataSource = new BindingList<Candlestick>(candlesticks);
         }
 
-        private void LoadRecognizedPatternsIntoComboBox()   
-        {   
-            // Clear the existing items in the ComboBox
-            comboBox_PatternPicker.Items.Clear();
-
-            // Aggregate recognized patterns across all smartCandleSticks instances
-            var recognizedPatterns = new HashSet<string>(); // Use HashSet to avoid duplicates
-            // Iterate over each smartCandleStick instance
-            foreach (var scs in smartCandleSticks)
-            {   
-                // Iterate over each pattern in the current smartCandleStick instance
-                foreach (var pattern in scs.Patterns)
-                {
-                    if (pattern.Value) // If the pattern is recognized (true)
-                    {
-                        recognizedPatterns.Add(pattern.Key); // Add it to the HashSet
-                    }
-                }
-            }
-
-            // Load the recognized patterns into the ComboBox
-            foreach (var pattern in recognizedPatterns)
-            {   
-                // Add the pattern to the ComboBox
-                comboBox_PatternPicker.Items.Add(pattern);
-            }
-        }
 
         /// <summary>
         /// Normalizes the volume data for better visualization in the chart.
@@ -320,12 +297,14 @@ namespace empty
         /// </summary>
         /// <param name="pattern">The selected pattern of user</param>
         private void AnnotateChartForPattern(string pattern)
-        {
+        {   
+            // Filter the smartCandleSticks based on the date range
+            BindingList<smartCandleStick> filteredSmartCandleSticks = filterSmartCandleSticks(smartCandleSticks);
             // Iterate over each smartCandleStick instance
             for (int i = 0; i < chart_Stock.Series["Series_OHLC"].Points.Count; i++)
             {   
                 // Get the current smartCandleStick instance
-                var candleStick = smartCandleSticks[i];
+                var candleStick = filteredSmartCandleSticks[i];
                 // Check if the current candlestick has the selected pattern
                 if (candleStick.Patterns.TryGetValue(pattern, out bool isPattern) && isPattern)
                 {
@@ -373,6 +352,15 @@ namespace empty
             {
                 // Display the filtered candlesticks in the DataGridView and potentially update the chart
                 displayCandlesticks(listOfCandleStick);
+
+                // Update the chart annotations based on the selected pattern
+                if (comboBox_PatternPicker.SelectedItem != null)
+                {
+                    // Get the selected pattern from the ComboBox
+                    string selectedPattern = comboBox_PatternPicker.SelectedItem.ToString();
+                    // Annotate the chart for the selected pattern
+                    AnnotateChartForPattern(selectedPattern);
+                }
             }
         }
 
@@ -385,6 +373,8 @@ namespace empty
         {   
             // Filter the candlesticks based on the date range
             listOfCandleStick = filterCandlesticks(listOfCandleStickUnmodified);
+            // Update the annotations based on the selected pattern
+            comboBox_PatternPicker_SelectedIndexChanged(sender, e);
             // Update the displayed data
             UpdateDisplayedData();
         }
@@ -408,6 +398,81 @@ namespace empty
                 // Annotate the chart for the selected pattern
                 AnnotateChartForPattern(selectedPattern);
             }
+        }
+
+        /// <summary>
+        /// Initialize the Recognizer list
+        /// </summary>
+        /// <returns>A list of recognizer list</returns>
+        private List<Recognizer> initializeRecognizerList()
+        {
+            // Create a list of Recognizer objects
+            List<Recognizer> recognizers = new List<Recognizer>
+            {   
+                new Recognizer_Bearish("Bearish", 1),
+                new Recognizer_Bullish("Bullish", 1),
+                new Recognizer_Doji("Doji", 1),
+                new Recognizer_Hammer("Hammer", 1),
+                new Recognizer_Marubozu("Marubozu", 1),
+                new Recognizer_Neutral("Neutral", 1),
+                new Recognizer_Peak("Peak", 3),
+                new Recognizer_Valley("Valley", 3),
+                new Recognizer_Bearish_Engulfing("Bearish Engulfing", 2),
+                new Recognizer_Bearish_Harami("Bearish Harami", 2),
+                new Recognizer_Bullish_Engulfing("Bullish Engulfing", 2),
+                new Recognizer_Bullish_Harami("Bullish Harami", 2),
+            };
+            // Iterate over each Recognizer object
+            for (int i = 0; i < recognizers.Count; i++)
+            {
+                // Add the recognizer to the combo box
+                comboBox_PatternPicker.Items.Add(recognizers[i].patternName);
+            }
+
+            // Return the list of Recognizer objects
+            return recognizers;
+        }
+
+        /// <summary>
+        /// Check the pattern for the data
+        /// </summary>
+        /// <param name="data">A list of smart candle stick to check patterns</param>
+        /// <returns>A list of smart candle stick</returns>
+        private List<smartCandleStick> checkPattern (List<smartCandleStick> data)
+        {   
+            // Initalize the recognizer list
+            recognizersList = initializeRecognizerList();
+            // Intialize the list of smartCandleStick objects
+            List<smartCandleStick> smartCandleSticks = new List<smartCandleStick>();
+            // Iterate over each Candlestick object
+            foreach (var cs in data)
+            {
+                // Create a smartCandleStick object from the current Candlestick object
+                smartCandleStick scs = new smartCandleStick(cs);
+
+                smartCandleSticks.Add(scs);
+            }
+            // Iterate over each Recognizer object
+            foreach (var recognizer in recognizersList)
+            {
+                // Recognize the pattern for each Recognizer object
+                recognizer.RecognizeAllPatterns(smartCandleSticks);
+            }
+
+            // Return the list of smartCandleStick objects
+            return smartCandleSticks;
+        }
+
+        private BindingList<smartCandleStick> filterSmartCandleSticks(BindingList<smartCandleStick> smartCandleSticks)
+        {
+            var start_date = dateTimePicker_Start.Value;
+            var end_date = dateTimePicker_End.Value;
+
+            var filteredList = smartCandleSticks
+                .Where(scs => scs.date >= start_date && scs.date <= end_date)
+                .ToList();
+
+            return new BindingList<smartCandleStick>(filteredList);
         }
     }
 }
