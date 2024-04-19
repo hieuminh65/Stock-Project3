@@ -449,7 +449,7 @@ namespace empty
             {
                 // Create a smartCandleStick object from the current Candlestick object
                 smartCandleStick scs = new smartCandleStick(cs);
-
+                // Add the smartCandleStick object to the list
                 smartCandleSticks.Add(scs);
             }
             // Iterate over each Recognizer object
@@ -463,15 +463,23 @@ namespace empty
             return smartCandleSticks;
         }
 
+        /// <summary>
+        /// Filter the smartCandleSticks based on the date range
+        /// </summary>
+        /// <param name="smartCandleSticks">A list of smart Candle Sticks</param>
+        /// <returns></returns>
         private BindingList<smartCandleStick> filterSmartCandleSticks(BindingList<smartCandleStick> smartCandleSticks)
-        {
+        {   
+            // Get the start and end dates from the date pickers
             var start_date = dateTimePicker_Start.Value;
+            // Get the start and end dates from the date pickers
             var end_date = dateTimePicker_End.Value;
 
+            // Use LINQ to filter the smartCandleSticks within the date range
             var filteredList = smartCandleSticks
                 .Where(scs => scs.date >= start_date && scs.date <= end_date)
                 .ToList();
-
+            // Return the filtered list of smartCandleSticks
             return new BindingList<smartCandleStick>(filteredList);
         }
     }
