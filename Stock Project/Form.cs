@@ -95,6 +95,11 @@ namespace empty
         {   
             // Clear the combo box items
             comboBox_PatternPicker.Items.Clear();
+            // Reset the chart annotations
+            chart_Stock.Annotations.Clear();
+            // Reset the date range to the default values
+            dateTimePicker_Start.Value = new DateTime(2022, 1, 1);
+            dateTimePicker_End.Value = DateTime.Now;
             // Read the candlesticks from the file
             listOfCandleStick = readCandlesticksFromFile(fileName);
             // Check if the list of candlesticks is null or empty

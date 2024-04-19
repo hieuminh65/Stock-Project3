@@ -113,7 +113,7 @@ namespace Stock_Project
         // Check if the candlestick is a Marubozu
         public Boolean isMarubozucs()
         {
-            return bodyRange == range;
+            return (range - bodyRange) < 0.05M * range;
         }
 
         // Check if the candlestick is a Doji
