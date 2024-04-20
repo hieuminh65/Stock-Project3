@@ -8,6 +8,9 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace Stock_Project
 {
+    /// <summary>
+    /// Internal class for the smart candlestick
+    /// </summary>
     internal class smartCandleStick : Candlestick
     {
         // Declaring public properties for additional candlestick data
@@ -25,7 +28,10 @@ namespace Stock_Project
         // Static variable for doji buffer
         static Decimal dojiBuffer = 0.05M;
 
-        // Constructor that takes an existing candlestick (cs) and initializes properties
+        /// <summary>
+        /// Initialize the smart candlestick object
+        /// </summary>
+        /// <param name="cs"></param>
         public smartCandleStick(Candlestick cs)
         {
             this.volume = cs.volume;
@@ -59,7 +65,9 @@ namespace Stock_Project
             };
         }
 
-        // Compute higher-level properties of the candlestick
+        /// <summary>
+        /// Compute the higher properties of the candlestick
+        /// </summary>
         void computeHigherProperties()
         {
             range = high - low;
@@ -70,7 +78,9 @@ namespace Stock_Project
             bottomTail = Math.Max(bottomPrice - low, 0);
         }
 
-        // Compute candlestick patterns
+        /// <summary>
+        /// Make the dictionary of patterns
+        /// </summary>
         void computePatterns()
         {
             
@@ -92,51 +102,74 @@ namespace Stock_Project
 
         }
 
-        // Check if the candlestick is bullish
+        /// <summary>
+        /// Check if the candlestick is bullish
+        /// </summary>
+        /// <returns></returns>
         public Boolean isBullishcs()
         {
             return open < close;
         }
 
-        // Check if the candlestick is neutral
+        /// <summary>
+        /// Check if the candlestick is neutral
+        /// </summary>
+        /// <returns></returns>
         public Boolean isNeutralcs()
         {
             return (bodyRange <= 0.3M * range);
         }
 
-        // Check if the candlestick is bearish
+        /// <summary>
+        /// Check if the candlestick is bearish
+        /// </summary>
+        /// <returns></returns>
         public Boolean isBearishcs()
         {
             return open > close;
         }
 
-        // Check if the candlestick is a Marubozu
+        /// <summary>
+        /// Check if the candlestick is Marubozu
+        /// </summary>
+        /// <returns></returns>
         public Boolean isMarubozucs()
         {
             return (range - bodyRange) < 0.05M * range;
         }
 
-        // Check if the candlestick is a Doji
+        /// <summary>
+        /// Check if the candlestick is Doji
+        /// </summary>
+        /// <returns></returns>
         public Boolean isDojics()
         {
             return bodyRange < dojiBuffer * open;
         }
 
-        // Check if the candlestick is a Hammer
+        /// <summary>
+        ///  Check if the candlestick is a Hammer
+        /// </summary>
+        /// <returns></returns>
         public Boolean isHammercs()
         {
             return topTail < 0.03M * range && bodyRange >= 0.2M * range && bodyRange <= 0.3M * range;
         }
 
 
-
-        // Check if the candlestick is a Dragonfly Doji
+        /// <summary>
+        /// Check if the candlestick is a DragonFly Doji
+        /// </summary>
+        /// <returns></returns>
         public Boolean isDragonFlyDojics()
         {
             return (bodyRange < 0.1M * range) && (bottomTail <= 0.1M * range) && (topTail >= 2 * bottomTail);
         }
 
-        // Check if the candlestick is a Gravestone Doji
+        /// <summary>
+        /// Check if the candlestick is a GraveStone Doji
+        /// </summary>
+        /// <returns></returns>
         public Boolean isGraveStoneDojics()
         {
             return (bodyRange < 0.1M * range) && (topTail <= 0.1M * range) && (bottomTail >= 2 * topTail);
