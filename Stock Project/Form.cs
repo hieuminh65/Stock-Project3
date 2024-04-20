@@ -312,7 +312,60 @@ namespace empty
                 var candleStick = filteredSmartCandleSticks[i];
                 // Check if the current candlestick has the selected pattern
                 if (candleStick.Patterns.TryGetValue(pattern, out bool isPattern) && isPattern)
-                {
+                {   
+                    // Get the length of the pattern
+                    int length = recognizersList.Where(recognizer => recognizer.patternName == pattern).FirstOrDefault().patternLength;
+                    // Check if the length of the pattern is greater than 1
+                    if (length > 1)
+                    {   
+                        // Skip index if it is out of range
+                        if (i == 0 || (i == chart_Stock.Series["Series_OHLC"].Points.Count - 1) || length == 3)
+                        {
+                            continue;
+                        }
+                        // Calculate width based on the number of candlesticks in the pattern
+                        var width = (90.0 / chart_Stock.Series["Series_OHLC"].Points.Count) * length;
+                        // Calculate Ymax. Ymin
+                        double Ymax, Ymin;
+                        // Anchor Offset
+                        var anchorOffset = 0.0;
+                        // Check the length of the pattern
+                        if (length == 2)
+                        {   
+                            // Set the Ymax and Ymin values for the pattern based on the previous candlestick
+                            Ymax = (int)Math.Max(candleStick.high, filteredSmartCandleSticks[i - 1].high);
+                            Ymin = (int)Math.Min(candleStick.low, filteredSmartCandleSticks[i - 1].low);
+                            // Set the anchor offset for the pattern
+                            anchorOffset = -((width / length) / 2);
+                        } else
+                        {
+                            // Set the Ymax and Ymin values for the pattern based on the previous and next candlesticks
+                            Ymax = (int)Math.Max(candleStick.high, Math.Max(filteredSmartCandleSticks[i - 1].high, filteredSmartCandleSticks[i + 1].high));
+                            Ymin = (int)Math.Min(candleStick.low, Math.Min(filteredSmartCandleSticks[i - 1].low, filteredSmartCandleSticks[i + 1].low));
+                        }
+                        // Create a RectangleAnnotation for the selected pattern
+                        var rectangleAnnotation = new RectangleAnnotation
+                        {   
+                            // Set the properties of the rectangle annotation
+                            BackColor = Color.Transparent, // Transparent background
+                            LineDashStyle = ChartDashStyle.Dash, // Dashed line style
+                            LineColor = Color.Black, // Black line color
+                            LineWidth = 1, // Line width
+                            // Set the anchor data point to the current candlestick
+                            AnchorDataPoint = chart_Stock.Series["Series_OHLC"].Points[i],
+                            // Set the rectangle properties
+                            Height = 40.0 * (Ymax - Ymin) / (chart_Stock.ChartAreas[0].AxisY.Maximum - chart_Stock.ChartAreas[0].AxisY.Minimum), // Height of the rectangle 
+                            Width = width, // Width of the rectangle
+                            AxisX = chart_Stock.ChartAreas[0].AxisX, // X-axis of the chart
+                            AxisY = chart_Stock.ChartAreas[0].AxisY, // Y-axis of the chart
+                            // Set the Y property for the rectangle annotation
+                            Y = Ymax,
+                            // Anchor Offset
+                            AnchorOffsetY = anchorOffset
+                        };
+                        // Add the rectangle annotation to the chart
+                        chart_Stock.Annotations.Add(rectangleAnnotation);
+                    }
                     // Create an ArrowAnnotation for the selected pattern
                     var arrowAnnotation = new ArrowAnnotation
                     {
